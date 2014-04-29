@@ -73,27 +73,30 @@
 			var cards = [];
 			for( var suit=0; suit<4; suit++) {
 				for( var value=1; value<14; value++) {
-					var card = baseCard.cloneNode(true);
-					card.id = 'id_'+suit+'_'+value;
-					card.setAttribute('suit', suit);
-					card.setAttribute('value', value);
-					var spans = $(card).children('span');
-					$(spans[0]).html(value == 1 ? 'A' : (value>10?pics[value-11]:value));
-					$(spans[1]).html(suitList[suit]);
-					$(spans[2]).html(suitList[suit]);
-					document.body.appendChild( card);
+					var card = baseCard.clone();
+					card.attr({
+						id: 'id_'+suit+'_'+value,
+						suit: suit,
+						value: value
+					});
+					var spans = card.children('span');
+					spans.eq(0).html(value == 1 ? 'A' : (value>10?pics[value-11]:value));
+					spans.eq(1).html(suitList[suit]);
+					spans.eq(2).html(suitList[suit]);
 					cards.push( card);
+					card.appendTo(document.body);
 				}
 			}
 			return cards;
 		}
 		
-		function setupDraggable() {
-			$('.card').draggable({
-				disabled: true,
+		function setupDraggable(card) {
+			card.draggable({
+				disabled: false,
 				revert: 'invalid',
 				start: function(e) {
 					console.log( 'start', e.target.getAttribute('value') );
+					// TODO: set zIndex
 				},
 				drag: function(e, ui) {
 					// $('#block2').css('left',$(this).position().left);  
@@ -106,7 +109,7 @@
 					//console.log(e);
 				}
 			});
-			$('.card').droppable({
+			card.droppable({
 				disabled: true,
 				accept: dropHandler
 			});
@@ -127,12 +130,14 @@
 		}
 
 		function reveal(card) {
-			var c = colorList[card.getAttribute('suit')];
-			$(card).removeClass('backside');
-			$(card).children('span').removeClass('hidden').addClass(c);
+			var c = colorList[card.attr('suit')];
+			card.removeClass('backside');
+			card.children('span').removeClass('hidden').addClass(c);
+			setupDraggable( card);
+			//card.draggable({disabled: false});
 		}
 
-		function setupBoard() {
+		function setupBoard(cards) {
 			var board = [];
 			reveal(cards[0]);
 			board[0] = [cards[0]];
@@ -158,23 +163,23 @@
 					// TODO: put the jQuery wrapped card into the board...
 					var card = board[col][row];
 					
-					$(card).css({
+					card.css({
 						left: xPos+'px',
 						top: yPos+'px',
 						zIndex: row
 					});
 
-					if( ! $(card).hasClass('backside') ) {
-						$(card).draggable({disabled: false});
+					if( ! card.hasClass('backside') ) {
+						//card.draggable({disabled: false});
 						yPos+=65;
 					} else {
 						yPos+=10;
 					}
 					
 					if( row == board[col].length-1 ) {
-						$(card).droppable({disabled: false});
+						card.droppable({disabled: false});
 					} else {
-						$(card).droppable({disabled: true});
+						card.droppable({disabled: true});
 					}
 					
 				}
@@ -182,12 +187,11 @@
 			}
 		}
 
-		var baseCard = document.getElementsByClassName('card')[0];
+		var baseCard =  $('.card').first();
 		var cards = cloneDeckFromBaseCard( baseCard);
-		$(baseCard).hide();
+		baseCard.hide();
 		shuffle( cards);
-		setupDraggable();
-		var board = setupBoard();
+		var board = setupBoard(cards);
 		printBoard( board);
 		
 	});
