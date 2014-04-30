@@ -1,16 +1,29 @@
+<!DOCTYPE HTML>
 <html>
 <head>
 	<style>
 	body {
 		background-color: green;
 	}
+	.spot {
+		margin-left: 60px;
+		margin-top: 80px;
+		height: 220px;
+		width: 140px;
+		float: left;
+		position:relative;
+		border: 1px red solid;
+		z-index: -1;
+	}
 	.card {
+		position: absolute;
+		top: 66px;
+		left: -1px;
+		width: 140px;
+		height: 220px;
 		background-color: white;
 		border-radius: 15px;
 		border: 1px solid black;
-		position: absolute;
-		width: 140px;
-		height: 220px;
 		user-select: none;
 		cursor: default;
 	}
@@ -34,6 +47,7 @@
 		font-size: 150px;
 	}
 	.backside {
+		top: 20px;
 		background-color: lightblue;
 	}
 	.hidden {
@@ -43,6 +57,14 @@
 </head>
 <body>
 
+<div class="spot"></div>
+<div class="spot"></div>
+<div class="spot"></div>
+<div class="spot"></div>
+<div class="spot"></div>
+<div class="spot"></div>
+<div class="spot"></div>
+
 <div class="card backside">
 	<span class="topLeft hidden"></span>
     <span class="topRight hidden"></span>
@@ -51,11 +73,9 @@
 </div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 
 <script>
 	// http://labs.mintchaos.com/flippant.js/
-	document.addEventListener('mousedown', function(e){e.preventDefault()}, false);
 	
 	function shuffle(a) {
 		for (var i = a.length - 1; i > 0; i--) {
@@ -84,115 +104,86 @@
 					spans.eq(1).html(suitList[suit]);
 					spans.eq(2).html(suitList[suit]);
 					cards.push( card);
-					card.appendTo(document.body);
 				}
 			}
 			return cards;
 		}
 		
-		function setupDraggable(card) {
-			card.draggable({
-				disabled: false,
-				revert: 'invalid',
-				start: function(e) {
-					console.log( 'start', e.target.getAttribute('value') );
-					// TODO: set zIndex
-				},
-				drag: function(e, ui) {
-					// $('#block2').css('left',$(this).position().left);  
-					$('.below').css({
-						'top': ui.helper.css('top'),
-						'left': ui.helper.css('left')
-					});
-				},
-				stop: function(e) {
-					//console.log(e);
-				}
-			});
-			card.droppable({
-				disabled: true,
-				accept: dropHandler
-			});
-		}
-		
-		function dropHandler(dropCard) {
-			var dropColor = dropCard[0].getAttribute('suit') < 2;
-			var targetColor = this.getAttribute('suit') < 2;
-			
-			var dropValue = parseInt(dropCard[0].getAttribute('value'));
-			var targetValue = parseInt( this.getAttribute('value'));
-			if( targetValue == NaN)
-				return false;
-
-			return (dropColor !== targetColor) && (targetValue === dropValue + 1);
-			
-			//dropElem was the dropped element, return true or false to accept/refuse it
-		}
-
 		function reveal(card) {
 			var c = colorList[card.attr('suit')];
 			card.removeClass('backside');
 			card.children('span').removeClass('hidden').addClass(c);
-			setupDraggable( card);
-			//card.draggable({disabled: false});
+			//setupDraggable( card);
+			//$(card).draggable({disabled: false});
 		}
 
 		function setupBoard(cards) {
-			var board = [];
 			reveal(cards[0]);
-			board[0] = [cards[0]];
+			var spots = $('.spot');
+			
+			spots.eq(0).append(cards[0]);
 
 			var counter=1;
 			for( var col=1; col<7; col++) {
-				board[col] = [];
 				for( var row=0; row<5+col; row++) {
 					var card = cards[counter++];
 					if( row > col -1 )
 						reveal( card);
-					board[col].push(card);
+					var spot = spots.eq(col);
+					if( spot.children().length == 0)
+						spot.append(card);
+					else
+						spot.find('.card').last().append( card )
+					if( row == 4+col ) {
+						//card.droppable({disabled: false});
+					} else {
+						//card.droppable({disabled: true});
+					}
 				}
 			}
-			return board;
 		}
+		
+		var md = false;
+		var mdTarget, mdTargetPos, mdPageX, mdPageY;
 
-		function printBoard( board) {
-			var xPos=100;
-			for( var col=0; col<board.length; col++) {
-				var yPos=80;
-				for( var row=0; row<board[col].length; row++) {
-					// TODO: put the jQuery wrapped card into the board...
-					var card = board[col][row];
-					
-					card.css({
-						left: xPos+'px',
-						top: yPos+'px',
-						zIndex: row
-					});
-
-					if( ! card.hasClass('backside') ) {
-						//card.draggable({disabled: false});
-						yPos+=65;
-					} else {
-						yPos+=10;
-					}
-					
-					if( row == board[col].length-1 ) {
-						card.droppable({disabled: false});
-					} else {
-						card.droppable({disabled: true});
-					}
-					
-				}
-				xPos+=200
+		$(document).mousedown( function(e) {
+		
+			mdTarget = $(e.target);
+			
+			if( !mdTarget.hasClass('card')) {
+				mdTarget = mdTarget.parent();
 			}
-		}
 
-		var baseCard =  $('.card').first();
+			
+			if( mdTarget.hasClass('card')) {
+				mdTargetPos = mdTarget.position();
+				console.log(mdTargetPos);
+				mdPageX = e.pageX;
+				mdPageY = e.pageY;
+				md = true;
+			}
+			e.preventDefault();
+		});
+
+		$(document).mouseup( function(e){md = false;});
+
+		$(document).mousemove( function(e) {
+			if( md) {
+				pageX = e.pageX;
+				pageY = e.pageY;
+				//console.log( pageX);
+				mdTarget.css({
+					top: mdTargetPos.top + pageY - mdPageY,
+					left: mdTargetPos.left + pageX - mdPageX
+				});
+			}
+		});
+
+		var baseCard = $('.card').first();
 		var cards = cloneDeckFromBaseCard( baseCard);
-		baseCard.hide();
+		$(baseCard).hide();
 		shuffle( cards);
-		var board = setupBoard(cards);
-		printBoard( board);
+		setupBoard(cards);
 		
 	});
 </script>
