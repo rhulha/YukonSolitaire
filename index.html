@@ -169,6 +169,10 @@
 		$(document).mouseup( function(e){
 			if( md) {
 				md = false;
+				var dropCard = $(e.target);
+				if( dropHandler(mdTarget, dropCard)) {
+					dropCard.append( mdTarget);
+				}
 				mdTarget.css({
 					top: mdTargetPos.top,
 					left: mdTargetPos.left,
@@ -182,14 +186,30 @@
 				pageX = e.pageX;
 				pageY = e.pageY;
 				//var el = document.elementFromPoint(pageX,pageY);
-				var el = e.target;
-				$(el).css({borderColor: 'red'});
+				var dropCard = $(e.target);
+				
+				if( dropHandler(mdTarget, dropCard)) {
+					dropCard.css({borderColor: 'red'});
+				}
+					
 				mdTarget.css({
 					top: mdTargetPos.top + pageY - mdPageY,
 					left: mdTargetPos.left + pageX - mdPageX
 				});
 			}
 		});
+		
+		function dropHandler( dragCard, dropCard) {
+			var dropColor = dropCard.attr('suit') < 2;
+			var dragColor = dragCard.attr('suit') < 2;
+			
+			var dropValue = parseInt( dropCard.attr('value'));
+			var dragValue = parseInt( dragCard.attr('value'));
+			if( dragValue == NaN)
+				return false;
+			return (dropColor !== dragColor) && (dropValue === dragValue + 1);
+		}
+
 
 		var baseCard = $('.card').first();
 		var cards = cloneDeckFromBaseCard( baseCard);
