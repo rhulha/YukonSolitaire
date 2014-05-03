@@ -53,6 +53,9 @@
 	.hidden {
 		display: none;
 	}
+	span {
+		pointer-events: none
+	}
 	</style>
 </head>
 <body>
@@ -147,31 +150,40 @@
 		var mdTarget, mdTargetPos, mdPageX, mdPageY;
 
 		$(document).mousedown( function(e) {
-		
 			mdTarget = $(e.target);
 			
 			if( !mdTarget.hasClass('card')) {
 				mdTarget = mdTarget.parent();
 			}
-
 			
-			if( mdTarget.hasClass('card')) {
+			if( mdTarget.hasClass('card') && !mdTarget.hasClass('backside')) {
 				mdTargetPos = mdTarget.position();
-				console.log(mdTargetPos);
 				mdPageX = e.pageX;
 				mdPageY = e.pageY;
 				md = true;
+				mdTarget.css('pointer-events', 'none');
 			}
 			e.preventDefault();
 		});
 
-		$(document).mouseup( function(e){md = false;});
+		$(document).mouseup( function(e){
+			if( md) {
+				md = false;
+				mdTarget.css({
+					top: mdTargetPos.top,
+					left: mdTargetPos.left,
+					pointerEvents: 'auto'
+				});
+			}
+		});
 
 		$(document).mousemove( function(e) {
 			if( md) {
 				pageX = e.pageX;
 				pageY = e.pageY;
-				//console.log( pageX);
+				//var el = document.elementFromPoint(pageX,pageY);
+				var el = e.target;
+				$(el).css({borderColor: 'red'});
 				mdTarget.css({
 					top: mdTargetPos.top + pageY - mdPageY,
 					left: mdTargetPos.left + pageX - mdPageX
