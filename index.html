@@ -55,6 +55,11 @@
 <div class="baseShape tableau"></div>
 <div class="baseShape tableau"></div>
 
+<div class="baseShape foundation" style="right: 100px; top:10px"></div>
+<div class="baseShape foundation" style="right: 250px; top:240px"></div>
+<div class="baseShape foundation" style="right: 250px; top:10px"></div>
+<div class="baseShape foundation" style="right: 100px; top:240px"></div>
+
 <div class="baseShape card backside">
 	<span class="topLeft" style="display: none"></span>
     <span class="topRight" style="display: none"></span>
@@ -112,14 +117,15 @@
 			for( var col=1; col<7; col++) {
 				for( var row=0; row<5+col; row++) {
 					var card = cards[counter++];
-					if( row > col -1 )
-						reveal( card);
 					var tableau = tableaus.eq(col);
 					if( tableau.children().length == 0) {
 						tableau.append(card);
 					} else {
 						tableau.find('.card').last().append( card);
 						card.css('top', '20px');
+					}
+					if( row > col -1 ) {
+						reveal( card);
 					}
 					if( row > col ) {
 						card.css('top', '66px');
@@ -144,6 +150,7 @@
 				mdPageY = e.pageY;
 				md = true;
 				mdTarget.css('pointer-events', 'none');
+				mdTarget.parents('.tableau').css('z-index', 100);
 			}
 			e.preventDefault();
 		});
@@ -153,6 +160,9 @@
 				md = false;
 				var dropCard = $(e.target);
 				if( dropHandler(mdTarget, dropCard)) {
+					if( mdTarget.parent().hasClass('card')) {
+						reveal( mdTarget.parent());
+					}
 					dropCard.append( mdTarget);
 				}
 				mdTarget.css({
@@ -160,6 +170,7 @@
 					left: mdTargetPos.left,
 					pointerEvents: 'auto'
 				});
+				$('.tableau').css('z-index', 'auto'); // reset zIndex
 			}
 		});
 
