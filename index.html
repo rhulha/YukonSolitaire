@@ -2,9 +2,6 @@
 <html>
 <head>
 	<style>
-	body {
-		background-color: green;
-	}
 	.spot {
 		margin-left: 60px;
 		margin-top: 80px;
@@ -58,7 +55,7 @@
 	}
 	</style>
 </head>
-<body>
+<body style="background-color:green">
 
 <div class="spot"></div>
 <div class="spot"></div>
@@ -78,14 +75,11 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 
 <script>
-	// http://labs.mintchaos.com/flippant.js/
-	
 	function shuffle(a) {
 		for (var i = a.length - 1; i > 0; i--) {
 			var j = Math.floor(Math.random() * (i + 1));
 			var temp = a[i];a[i] = a[j];a[j] = temp;
 		}
-		return a;
 	}
 	$(function() {
 		var suitList = ['&clubs;', '&spades;', '&hearts;', '&diams;'];
@@ -116,8 +110,6 @@
 			var c = colorList[card.attr('suit')];
 			card.removeClass('backside');
 			card.children('span').removeClass('hidden').addClass(c);
-			//setupDraggable( card);
-			//$(card).draggable({disabled: false});
 		}
 
 		function setupBoard(cards) {
@@ -137,11 +129,6 @@
 						spot.append(card);
 					else
 						spot.find('.card').last().append( card )
-					if( row == 4+col ) {
-						//card.droppable({disabled: false});
-					} else {
-						//card.droppable({disabled: true});
-					}
 				}
 			}
 		}
@@ -183,18 +170,9 @@
 
 		$(document).mousemove( function(e) {
 			if( md) {
-				pageX = e.pageX;
-				pageY = e.pageY;
-				//var el = document.elementFromPoint(pageX,pageY);
-				var dropCard = $(e.target);
-				
-				if( dropHandler(mdTarget, dropCard)) {
-					dropCard.css({borderColor: 'red'});
-				}
-					
 				mdTarget.css({
-					top: mdTargetPos.top + pageY - mdPageY,
-					left: mdTargetPos.left + pageX - mdPageX
+					top: mdTargetPos.top + e.pageY - mdPageY,
+					left: mdTargetPos.left + e.pageX - mdPageX
 				});
 			}
 		});
