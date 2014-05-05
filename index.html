@@ -2,7 +2,7 @@
 <html>
 <head>
 	<style>
-	.spot {
+	.tableau {
 		margin-left: 60px;
 		margin-top: 80px;
 		height: 220px;
@@ -57,13 +57,13 @@
 </head>
 <body style="background-color:green">
 
-<div class="spot"></div>
-<div class="spot"></div>
-<div class="spot"></div>
-<div class="spot"></div>
-<div class="spot"></div>
-<div class="spot"></div>
-<div class="spot"></div>
+<div class="tableau"></div>
+<div class="tableau"></div>
+<div class="tableau"></div>
+<div class="tableau"></div>
+<div class="tableau"></div>
+<div class="tableau"></div>
+<div class="tableau"></div>
 
 <div class="card backside">
 	<span class="topLeft hidden"></span>
@@ -114,9 +114,9 @@
 
 		function setupBoard(cards) {
 			reveal(cards[0]);
-			var spots = $('.spot');
+			var tableaus = $('.tableau');
 			
-			spots.eq(0).append(cards[0]);
+			tableaus.eq(0).append(cards[0]);
 
 			var counter=1;
 			for( var col=1; col<7; col++) {
@@ -124,11 +124,11 @@
 					var card = cards[counter++];
 					if( row > col -1 )
 						reveal( card);
-					var spot = spots.eq(col);
-					if( spot.children().length == 0)
-						spot.append(card);
+					var tableau = tableaus.eq(col);
+					if( tableau.children().length == 0)
+						tableau.append(card);
 					else
-						spot.find('.card').last().append( card )
+						tableau.find('.card').last().append( card )
 				}
 			}
 		}
