@@ -183,19 +183,28 @@
 
 			// foundation handling
 			var dragValue = parseInt( dragCard.attr('value'));
+			if( dragValue == NaN)
+				return false;
+
 			if(dropCard.hasClass('foundation') && (dragValue === 1) && !dragHasChildren) {
 				mdTargetPos.top = '-1px';
 				return true;
 			}
-			
-			var dropHasChildren = dropCard.children('.card').length>0;
 
-			var dropColor = dropCard.attr('suit') < 2;
-			var dragColor = dragCard.attr('suit') < 2;
+			var dropSuit = dropCard.attr('suit');
+			var dragSuit = dragCard.attr('suit');
 			
 			var dropValue = parseInt( dropCard.attr('value'));
-			if( dragValue == NaN)
-				return false;
+			if((dropCard.parents('.foundation').length > 0) && (dropSuit === dragSuit) && (dropValue === dragValue - 1) && !dragHasChildren) {
+				mdTargetPos.top = '-1px';
+				return true;
+			}
+
+			var dropHasChildren = dropCard.children('.card').length>0;
+
+			var dropColor = dropSuit < 2;
+			var dragColor = dragSuit < 2;
+
 			// tableau handling
 			if((dropColor !== dragColor) && (dropValue === dragValue + 1) && !dropHasChildren) {
 				mdTargetPos.top = '66px';
