@@ -2,33 +2,26 @@
 <html>
 <head>
 	<style>
+	.baseShape {
+		height: 220px;
+		width: 140px;
+		border-radius: 15px;
+		border: 1px white solid;
+		position: absolute;
+	}
 	.tableau {
 		margin-left: 60px;
-		margin-top: 80px;
-		height: 220px;
-		width: 140px;
+		margin-top: 10px;
 		float: left;
 		position:relative;
-		border: 1px red solid;
-		z-index: -1;
 	}
 	.card {
-		position: absolute;
-		top: 66px;
-		left: -1px;
-		width: 140px;
-		height: 220px;
 		background-color: white;
-		border-radius: 15px;
-		border: 1px solid black;
+		border: 1px black solid;
 		user-select: none;
 		cursor: default;
-	}
-	.red {
-		color: red;
-	}
-	.black {
-		color: black;
+		left:-1px;
+		top: -1px;
 	}
 	.topLeft {
 		position: absolute;
@@ -42,13 +35,10 @@
 	}
 	.suit {
 		font-size: 150px;
+		margin-left: 10px;
 	}
 	.backside {
-		top: 20px;
 		background-color: lightblue;
-	}
-	.hidden {
-		display: none;
 	}
 	span {
 		pointer-events: none
@@ -57,19 +47,19 @@
 </head>
 <body style="background-color:green">
 
-<div class="tableau"></div>
-<div class="tableau"></div>
-<div class="tableau"></div>
-<div class="tableau"></div>
-<div class="tableau"></div>
-<div class="tableau"></div>
-<div class="tableau"></div>
+<div class="baseShape tableau"></div>
+<div class="baseShape tableau"></div>
+<div class="baseShape tableau"></div>
+<div class="baseShape tableau"></div>
+<div class="baseShape tableau"></div>
+<div class="baseShape tableau"></div>
+<div class="baseShape tableau"></div>
 
-<div class="card backside">
-	<span class="topLeft hidden"></span>
-    <span class="topRight hidden"></span>
+<div class="baseShape card backside">
+	<span class="topLeft" style="display: none"></span>
+    <span class="topRight" style="display: none"></span>
 	<br/>
-	<span class="suit hidden"></span>
+	<span class="suit" style="display: none"></span>
 </div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
@@ -109,7 +99,7 @@
 		function reveal(card) {
 			var c = colorList[card.attr('suit')];
 			card.removeClass('backside');
-			card.children('span').removeClass('hidden').addClass(c);
+			card.children('span').css({color: c, display: ''});
 		}
 
 		function setupBoard(cards) {
@@ -125,10 +115,15 @@
 					if( row > col -1 )
 						reveal( card);
 					var tableau = tableaus.eq(col);
-					if( tableau.children().length == 0)
+					if( tableau.children().length == 0) {
 						tableau.append(card);
-					else
-						tableau.find('.card').last().append( card )
+					} else {
+						tableau.find('.card').last().append( card);
+						card.css('top', '20px');
+					}
+					if( row > col ) {
+						card.css('top', '66px');
+					}
 				}
 			}
 		}
