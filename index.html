@@ -139,11 +139,6 @@
 
 		$(document).mousedown( function(e) {
 			mdTarget = $(e.target);
-			
-			if( !mdTarget.hasClass('card')) {
-				mdTarget = mdTarget.parent();
-			}
-			
 			if( mdTarget.hasClass('card') && !mdTarget.hasClass('backside')) {
 				mdTargetPos = mdTarget.position();
 				mdPageX = e.pageX;
