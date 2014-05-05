@@ -184,16 +184,30 @@
 		});
 		
 		function dropHandler( dragCard, dropCard) {
+			var dragHasChildren = dragCard.children('.card').length>0;
+
+			// foundation handling
+			var dragValue = parseInt( dragCard.attr('value'));
+			if(dropCard.hasClass('foundation') && (dragValue === 1) && !dragHasChildren) {
+				mdTargetPos.top = '-1px';
+				return true;
+			}
+			
+			var dropHasChildren = dropCard.children('.card').length>0;
+
 			var dropColor = dropCard.attr('suit') < 2;
 			var dragColor = dragCard.attr('suit') < 2;
 			
 			var dropValue = parseInt( dropCard.attr('value'));
-			var dragValue = parseInt( dragCard.attr('value'));
 			if( dragValue == NaN)
 				return false;
-			return (dropColor !== dragColor) && (dropValue === dragValue + 1);
+			// tableau handling
+			if((dropColor !== dragColor) && (dropValue === dragValue + 1) && !dropHasChildren) {
+				mdTargetPos.top = '66px';
+				return true;
+			}
+			return false;
 		}
-
 
 		var baseCard = $('.card').first();
 		var cards = cloneDeckFromBaseCard( baseCard);
