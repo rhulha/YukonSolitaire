@@ -186,6 +186,11 @@
 			if( dragValue == NaN)
 				return false;
 
+			if(dropCard.hasClass('tableau') && (dragValue === 13)) {
+				mdTargetPos.top = '-1px';
+				return true;
+			}
+
 			if(dropCard.hasClass('foundation') && (dragValue === 1) && !dragHasChildren) {
 				mdTargetPos.top = '-1px';
 				return true;
