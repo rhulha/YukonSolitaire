@@ -153,12 +153,12 @@
 		$(document).mouseup( function(e){
 			if( md) {
 				md = false;
-				var dropCard = $(e.target);
-				if( dropHandler(mdTarget, dropCard)) {
+				var targetCard = $(e.target);
+				if( dropHandler(mdTarget, targetCard)) {
 					if( mdTarget.parent().hasClass('card')) {
 						reveal( mdTarget.parent());
 					}
-					dropCard.append( mdTarget);
+					targetCard.append( mdTarget);
 				}
 				mdTarget.css({
 					top: mdTargetPos.top,
@@ -178,40 +178,40 @@
 			}
 		});
 		
-		function dropHandler( dragCard, dropCard) {
-			var dragHasChildren = dragCard.children('.card').length>0;
-
-			// foundation handling
-			var dragValue = parseInt( dragCard.attr('value'));
-			if( dragValue == NaN)
-				return false;
-
-			if(dropCard.hasClass('tableau') && (dragValue === 13)) {
-				mdTargetPos.top = '-1px';
-				return true;
-			}
-
-			if(dropCard.hasClass('foundation') && (dragValue === 1) && !dragHasChildren) {
-				mdTargetPos.top = '-1px';
-				return true;
-			}
-
-			var dropSuit = dropCard.attr('suit');
-			var dragSuit = dragCard.attr('suit');
-			
-			var dropValue = parseInt( dropCard.attr('value'));
-			if((dropCard.parents('.foundation').length > 0) && (dropSuit === dragSuit) && (dropValue === dragValue - 1) && !dragHasChildren) {
-				mdTargetPos.top = '-1px';
-				return true;
-			}
-
+		function dropHandler( dropCard, targetCard) {
 			var dropHasChildren = dropCard.children('.card').length>0;
 
+			// foundation handling
+			var dropValue = parseInt( dropCard.attr('value'));
+			if( dropValue == NaN)
+				return false;
+
+			if(targetCard.hasClass('tableau') && (dropValue === 13)) {
+				mdTargetPos.top = '-1px';
+				return true;
+			}
+
+			if(targetCard.hasClass('foundation') && (dropValue === 1) && !dropHasChildren) {
+				mdTargetPos.top = '-1px';
+				return true;
+			}
+
+			var targetSuit = targetCard.attr('suit');
+			var dropSuit = dropCard.attr('suit');
+			
+			var targetValue = parseInt( targetCard.attr('value'));
+			if((targetCard.parents('.foundation').length > 0) && (targetSuit === dropSuit) && (targetValue === dropValue - 1) && !dropHasChildren) {
+				mdTargetPos.top = '-1px';
+				return true;
+			}
+
+			var targetHasChildren = targetCard.children('.card').length>0;
+
+			var targetColor = targetSuit < 2;
 			var dropColor = dropSuit < 2;
-			var dragColor = dragSuit < 2;
 
 			// tableau handling
-			if((dropColor !== dragColor) && (dropValue === dragValue + 1) && !dropHasChildren) {
+			if((targetColor !== dropColor) && (targetValue === dropValue + 1) && !targetHasChildren) {
 				mdTargetPos.top = '66px';
 				return true;
 			}
