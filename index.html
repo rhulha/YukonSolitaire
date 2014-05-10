@@ -211,7 +211,7 @@
 			var dropColor = dropSuit < 2;
 
 			// tableau handling
-			if((targetColor !== dropColor) && (targetValue === dropValue + 1) && !targetHasChildren) {
+			if((targetCard.parents('.tableau').length > 0) && (targetColor !== dropColor) && (targetValue === dropValue + 1) && !targetHasChildren) {
 				mdTargetPos.top = '66px';
 				return true;
 			}
