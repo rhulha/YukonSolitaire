@@ -149,16 +149,22 @@
 			}
 			e.preventDefault();
 		});
+		
+		function moveCard( dropCard, targetCard) {
+			if( dropCard.parent().hasClass('card')) {
+				reveal( dropCard.parent());
+			}
+			targetCard.append( dropCard);
+		}
 
 		$(document).mouseup( function(e){
 			if( md) {
 				md = false;
 				var targetCard = $(e.target);
-				if( dropHandler(mdTarget, targetCard)) {
-					if( mdTarget.parent().hasClass('card')) {
-						reveal( mdTarget.parent());
-					}
-					targetCard.append( mdTarget);
+				var result = dropHandler(mdTarget, targetCard);
+				if( result) {
+					mdTargetPos.top = result;
+					moveCard( mdTarget, targetCard);
 				}
 				mdTarget.css({
 					top: mdTargetPos.top,
@@ -178,6 +184,33 @@
 			}
 		});
 		
+		$(document).keydown( function(e) {
+			if(e.keyCode == 32) try {
+				$('.tableau').each( function(i, tableau) {
+					var checkForThisCard = $(tableau).find('.card').last();
+					$('.tableau').each( function(j, tab2) {
+						if( tab2 === tableau)
+							return;
+						$(tab2).find('.card').each( function(k, card) {
+							card = $(card);
+							if( !card.hasClass('backside')) {
+								var result = dropHandler(card, checkForThisCard);
+								if( result ) {
+									card.css('top', result);
+									moveCard(card, checkForThisCard);
+									throw "leave them all";
+								}
+							}
+						});
+					});
+				});
+			} catch(e) {
+				// swallow
+			}
+		});
+		
+		
+		
 		function dropHandler( dropCard, targetCard) {
 			var dropHasChildren = dropCard.children('.card').length>0;
 
@@ -187,13 +220,11 @@
 				return false;
 
 			if(targetCard.hasClass('tableau') && (dropValue === 13)) {
-				mdTargetPos.top = '-1px';
-				return true;
+				return '-1px';
 			}
 
 			if(targetCard.hasClass('foundation') && (dropValue === 1) && !dropHasChildren) {
-				mdTargetPos.top = '-1px';
-				return true;
+				return '-1px';
 			}
 
 			var targetSuit = targetCard.attr('suit');
@@ -201,8 +232,7 @@
 			
 			var targetValue = parseInt( targetCard.attr('value'));
 			if((targetCard.parents('.foundation').length > 0) && (targetSuit === dropSuit) && (targetValue === dropValue - 1) && !dropHasChildren) {
-				mdTargetPos.top = '-1px';
-				return true;
+				return '-1px';
 			}
 
 			var targetHasChildren = targetCard.children('.card').length>0;
@@ -212,8 +242,7 @@
 
 			// tableau handling
 			if((targetCard.parents('.tableau').length > 0) && (targetColor !== dropColor) && (targetValue === dropValue + 1) && !targetHasChildren) {
-				mdTargetPos.top = '66px';
-				return true;
+				return '66px';
 			}
 			return false;
 		}
