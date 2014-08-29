@@ -1,41 +1,62 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 	<style>
+    .column{
+      width: 11%;
+      float: left;
+      text-align: center;
+    }
+    .column-foundation{
+      float: left;
+      width: 22%;
+      padding: 10px 0;
+      text-align: center;
+    }
+
+    .baseShape,
+    .card{
+      font-size: 12px;
+      width: 2.4em;
+      height: 3.6em;
+      border-radius: 0.2em;
+    }
+
 	.baseShape {
-		height: 220px;
-		width: 140px;
-		border-radius: 15px;
-		border: 1px white solid;
+    border: 1px white solid;
 		position: absolute;
+    display: inline-block;
 	}
+    .foundation{
+      position: relative;
+    }
 	.tableau {
-		margin-left: 60px;
 		margin-top: 10px;
-		float: left;
 		position:relative;
 	}
 	.card {
-		background-color: white;
-		border: 1px black solid;
-		user-select: none;
-		cursor: default;
-		left:-1px;
-		top: -1px;
+    background-color: white;
+    border: 1px black solid;
+    user-select: none;
+    cursor: default;
+    left: -1px;
+    top: -1px;
 	}
 	.topLeft {
 		position: absolute;
-		font-size: 60px;
-		left: 12px;
+		font-size: 1em;
+    left: .3em;
 	}
 	.topRight {
-		position: absolute;
-		font-size: 60px;
-		right: 12px;
+    position: absolute;
+    font-size: 1em;
+    right: .3em;
 	}
 	.suit {
-		font-size: 150px;
-		margin-left: 10px;
+    font-size: 2.5em;
+    position: relative;
+    top: .2em;
 	}
 	.backside {
 		background-color: lightblue;
@@ -43,27 +64,84 @@
 	span {
 		pointer-events: none
 	}
+
+    @media (min-width: 450px) {
+      .card,
+      .baseShape{
+        font-size: 17px;
+      }
+    }
+    
+   @media (min-width: 650px) {
+     .card,
+     .baseShape{
+       font-size: 20px;
+     }
+   }
+
+
+   @media (min-width: 750px) {
+     .card,
+     .baseShape{
+       font-size: 30px;
+     }
+   }
+
+   @media (min-width: 950px) {
+     .card,
+     .baseShape{
+       font-size: 40px;
+     }
+   }
+   @media (min-width: 1180px) {
+     .card,
+     .baseShape{
+       font-size: 50px;
+     }
+   }
+   @media (min-width: 1370px) {
+     .card,
+     .baseShape{
+       font-size: 60px;
+     }
+   }
 	</style>
 </head>
 <body style="background-color:green">
 
-<div class="baseShape tableau"></div>
-<div class="baseShape tableau"></div>
-<div class="baseShape tableau"></div>
-<div class="baseShape tableau"></div>
-<div class="baseShape tableau"></div>
-<div class="baseShape tableau"></div>
-<div class="baseShape tableau"></div>
+<div class="column">
+  <div class="baseShape tableau"></div>
+</div>
+<div class="column">
+  <div class="baseShape tableau"></div>
+</div>
+<div class="column">
+  <div class="baseShape tableau"></div>
+</div>
+<div class="column">
+  <div class="baseShape tableau"></div>
+</div>
+<div class="column">
+  <div class="baseShape tableau"></div>
+</div>
+<div class="column">
+  <div class="baseShape tableau"></div>
+</div>
+<div class="column">
+  <div class="baseShape tableau"></div>
+</div>
 
-<div class="baseShape foundation" style="right: 100px; top:10px"></div>
-<div class="baseShape foundation" style="right: 250px; top:240px"></div>
-<div class="baseShape foundation" style="right: 250px; top:10px"></div>
-<div class="baseShape foundation" style="right: 100px; top:240px"></div>
+
+<div class="column-foundation">
+  <div class="baseShape foundation" ></div>
+  <div class="baseShape foundation" ></div>
+  <div class="baseShape foundation" ></div>
+  <div class="baseShape foundation" ></div>
+</div>
 
 <div class="baseShape card backside">
 	<span class="topLeft" style="display: none"></span>
     <span class="topRight" style="display: none"></span>
-	<br/>
 	<span class="suit" style="display: none"></span>
 </div>
 
@@ -122,13 +200,13 @@
 						tableau.append(card);
 					} else {
 						tableau.find('.card').last().append( card);
-						card.css('top', '20px');
+						card.css('top', '.5em');
 					}
 					if( row > col -1 ) {
 						reveal( card);
 					}
 					if( row > col ) {
-						card.css('top', '66px');
+						card.css('top', '1.1em');
 					}
 				}
 			}
@@ -165,13 +243,23 @@
 				if( result) {
 					mdTargetPos.top = result;
 					moveCard( mdTarget, targetCard);
-				}
-				mdTarget.css({
-					top: mdTargetPos.top,
-					left: mdTargetPos.left,
-					pointerEvents: 'auto'
-				});
-				$('.tableau').css('z-index', 'auto'); // reset zIndex
+          mdTarget.css({
+            top: mdTargetPos.top,
+            left: mdTargetPos.left,
+            pointerEvents: 'auto'
+          });
+          $('.tableau').css('z-index', 'auto'); // reset zIndex
+				}else{
+          mdTarget.animate({
+            top: mdTargetPos.top,
+            left: mdTargetPos.left,
+            pointerEvents: 'auto'
+          }, 100, function () {
+            $('.tableau').css('z-index', 'auto'); // reset zIndex
+          });
+        }
+
+
 			}
 		});
 
@@ -242,7 +330,7 @@
 
 			// tableau handling
 			if((targetCard.parents('.tableau').length > 0) && (targetColor !== dropColor) && (targetValue === dropValue + 1) && !targetHasChildren) {
-				return '66px';
+				return '1.1em';
 			}
 			return false;
 		}
