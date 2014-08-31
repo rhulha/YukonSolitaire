@@ -225,10 +225,6 @@
 				mdPageX = e.pageX;
 				mdPageY = e.pageY;
 				md = true;
-				mdTarget.css({
-					pointerEvents: 'none',
-					touchAction: 'none'
-				});
 				mdTarget.parents('.tableau').css('z-index', 100);
 			}
 		});
@@ -257,16 +253,13 @@
 				moveCard( mdTarget, targetCard);
 				mdTarget.css({
 					top: mdTargetPos.top,
-					left: mdTargetPos.left,
-					pointerEvents: 'auto',
-					touchAction: 'auto'
+					left: mdTargetPos.left
 				});
 				$('.tableau').css('z-index', 'auto'); // reset zIndex
 			}else{
 				mdTarget.animate({
 					top: mdTargetPos.top,
-					left: mdTargetPos.left,
-					pointerEvents: 'auto'
+					left: mdTargetPos.left
 				}, 100, function () {
 					$('.tableau').css('z-index', 'auto'); // reset zIndex
 				});
