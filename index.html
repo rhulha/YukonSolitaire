@@ -235,7 +235,7 @@
 			}
 			targetCard.append( dropCard);
 		}
-		
+
 		function elemFromPoint(x,y) {
 			return $(document.elementFromPoint(x-window.pageXOffset, y-window.pageYOffset));
 		}
@@ -244,12 +244,11 @@
 			if( !md) return;
 			md = false;
 			var o = mdTarget.offset(); //mdTarget.getBoundingClientRect()
-			var targetCard = elemFromPoint(o.left, o.top);
-			
-			//var targetCard = $(e.target);
+			var targetCard = elemFromPoint(o.left-1, o.top-1);
+
 			var result = dropHandler(mdTarget, targetCard);
 			if( !result) {
-				targetCard = elemFromPoint(o.left+mdTarget.width(), o.top);
+				targetCard = elemFromPoint(o.left+mdTarget.width()+1, o.top-1);
 				result = dropHandler(mdTarget, targetCard);
 			}
 			if( result) {
