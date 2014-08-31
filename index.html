@@ -235,17 +235,21 @@
 			}
 			targetCard.append( dropCard);
 		}
+		
+		function elemFromPoint(x,y) {
+			return $(document.elementFromPoint(x-window.pageXOffset, y-window.pageYOffset));
+		}
 
 		$(document).on('mouseup touchend', function(e){
 			if( !md) return;
 			md = false;
 			var o = mdTarget.offset(); //mdTarget.getBoundingClientRect()
-			var targetCard = $(document.elementFromPoint(o.left, o.top));
+			var targetCard = elemFromPoint(o.left, o.top);
 			
 			//var targetCard = $(e.target);
 			var result = dropHandler(mdTarget, targetCard);
 			if( !result) {
-				targetCard = $(document.elementFromPoint(o.left+mdTarget.width(), o.top));
+				targetCard = elemFromPoint(o.left+mdTarget.width(), o.top);
 				result = dropHandler(mdTarget, targetCard);
 			}
 			if( result) {
