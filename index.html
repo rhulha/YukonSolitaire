@@ -3,60 +3,60 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 	<style>
-    .column{
-      width: 11%;
-      float: left;
-      text-align: center;
-    }
-    .column-foundation{
-      float: left;
-      width: 22%;
-      padding: 10px 0;
-      text-align: center;
-    }
+	.column{
+	  width: 11%;
+	  float: left;
+	  text-align: center;
+	}
+	.column-foundation{
+	  float: left;
+	  width: 22%;
+	  padding: 10px 0;
+	  text-align: center;
+	}
 
-    .baseShape,
-    .card{
-      font-size: 12px;
-      width: 2.4em;
-      height: 3.6em;
-      border-radius: 0.2em;
-    }
+	.baseShape,
+	.card{
+	  font-size: 12px;
+	  width: 2.4em;
+	  height: 3.6em;
+	  border-radius: 0.2em;
+	}
 
 	.baseShape {
-    border: 1px white solid;
+	border: 1px white solid;
 		position: absolute;
-    display: inline-block;
+	display: inline-block;
 	}
-    .foundation{
-      position: relative;
-    }
+	.foundation{
+	  position: relative;
+	}
 	.tableau {
 		margin-top: 10px;
 		position:relative;
 	}
 	.card {
-    background-color: white;
-    border: 1px black solid;
-    user-select: none;
-    cursor: default;
-    left: -1px;
-    top: -1px;
+	background-color: white;
+	border: 1px black solid;
+	user-select: none;
+	cursor: default;
+	left: -1px;
+	top: -1px;
 	}
 	.topLeft {
 		position: absolute;
 		font-size: 1em;
-    left: .3em;
+	left: .3em;
 	}
 	.topRight {
-    position: absolute;
-    font-size: 1em;
-    right: .3em;
+	position: absolute;
+	font-size: 1em;
+	right: .3em;
 	}
 	.suit {
-    font-size: 2.5em;
-    position: relative;
-    top: .2em;
+	font-size: 2.5em;
+	position: relative;
+	top: .2em;
 	}
 	.backside {
 		background-color: lightblue;
@@ -65,45 +65,45 @@
 		pointer-events: none
 	}
 
-    @media (min-width: 450px) {
-      .card,
-      .baseShape{
-        font-size: 17px;
-      }
-    }
-    
+	@media (min-width: 450px) {
+	  .card,
+	  .baseShape{
+		font-size: 17px;
+	  }
+	}
+	
    @media (min-width: 650px) {
-     .card,
-     .baseShape{
-       font-size: 20px;
-     }
+	 .card,
+	 .baseShape{
+	   font-size: 20px;
+	 }
    }
 
 
    @media (min-width: 750px) {
-     .card,
-     .baseShape{
-       font-size: 30px;
-     }
+	 .card,
+	 .baseShape{
+	   font-size: 30px;
+	 }
    }
 
    @media (min-width: 950px) {
-     .card,
-     .baseShape{
-       font-size: 40px;
-     }
+	 .card,
+	 .baseShape{
+	   font-size: 40px;
+	 }
    }
    @media (min-width: 1180px) {
-     .card,
-     .baseShape{
-       font-size: 50px;
-     }
+	 .card,
+	 .baseShape{
+	   font-size: 50px;
+	 }
    }
    @media (min-width: 1370px) {
-     .card,
-     .baseShape{
-       font-size: 60px;
-     }
+	 .card,
+	 .baseShape{
+	   font-size: 60px;
+	 }
    }
 	</style>
 </head>
@@ -141,7 +141,7 @@
 
 <div class="baseShape card backside">
 	<span class="topLeft" style="display: none"></span>
-    <span class="topRight" style="display: none"></span>
+	<span class="topRight" style="display: none"></span>
 	<span class="suit" style="display: none"></span>
 </div>
 
@@ -215,17 +215,22 @@
 		var md = false;
 		var mdTarget, mdTargetPos, mdPageX, mdPageY;
 
-		$(document).mousedown( function(e) {
+		$(document).on('mousedown touchstart', function(e) {
 			mdTarget = $(e.target);
+			e.preventDefault();
+			if( e.type == 'touchstart')
+				e = e.originalEvent.touches[0];
 			if( mdTarget.hasClass('card') && !mdTarget.hasClass('backside')) {
 				mdTargetPos = mdTarget.position();
 				mdPageX = e.pageX;
 				mdPageY = e.pageY;
 				md = true;
-				mdTarget.css('pointer-events', 'none');
+				mdTarget.css({
+					pointerEvents: 'none',
+					touchAction: 'none'
+				});
 				mdTarget.parents('.tableau').css('z-index', 100);
 			}
-			e.preventDefault();
 		});
 		
 		function moveCard( dropCard, targetCard) {
@@ -235,39 +240,46 @@
 			targetCard.append( dropCard);
 		}
 
-		$(document).mouseup( function(e){
-			if( md) {
-				md = false;
-				var targetCard = $(e.target);
-				var result = dropHandler(mdTarget, targetCard);
-				if( result) {
-					mdTargetPos.top = result;
-					moveCard( mdTarget, targetCard);
-          mdTarget.css({
-            top: mdTargetPos.top,
-            left: mdTargetPos.left,
-            pointerEvents: 'auto'
-          });
-          $('.tableau').css('z-index', 'auto'); // reset zIndex
-				}else{
-          mdTarget.animate({
-            top: mdTargetPos.top,
-            left: mdTargetPos.left,
-            pointerEvents: 'auto'
-          }, 100, function () {
-            $('.tableau').css('z-index', 'auto'); // reset zIndex
-          });
-        }
-
-
+		$(document).on('mouseup touchend', function(e){
+			if( !md) return;
+			md = false;
+			var o = mdTarget.offset(); //mdTarget.getBoundingClientRect()
+			var targetCard = $(document.elementFromPoint(o.left, o.top));
+			
+			//var targetCard = $(e.target);
+			var result = dropHandler(mdTarget, targetCard);
+			if( !result) {
+				targetCard = $(document.elementFromPoint(o.left+mdTarget.width(), o.top));
+				result = dropHandler(mdTarget, targetCard);
+			}
+			if( result) {
+				mdTargetPos.top = result;
+				moveCard( mdTarget, targetCard);
+				mdTarget.css({
+					top: mdTargetPos.top,
+					left: mdTargetPos.left,
+					pointerEvents: 'auto',
+					touchAction: 'auto'
+				});
+				$('.tableau').css('z-index', 'auto'); // reset zIndex
+			}else{
+				mdTarget.animate({
+					top: mdTargetPos.top,
+					left: mdTargetPos.left,
+					pointerEvents: 'auto'
+				}, 100, function () {
+					$('.tableau').css('z-index', 'auto'); // reset zIndex
+				});
 			}
 		});
 
-		$(document).mousemove( function(e) {
+		$(document).on('mousemove touchmove', function(e) {
 			if( md) {
+				if( e.type == 'touchmove')
+					e = e.originalEvent.touches[0];
 				mdTarget.css({
-					top: mdTargetPos.top + e.pageY - mdPageY,
-					left: mdTargetPos.left + e.pageX - mdPageX
+					top: mdTargetPos.top + e.pageY- mdPageY,
+					left: mdTargetPos.left + e.pageX- mdPageX
 				});
 			}
 		});
