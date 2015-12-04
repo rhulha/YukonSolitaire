@@ -24,9 +24,9 @@
 	}
 
 	.baseShape {
-	border: 1px white solid;
+		border: 1px white solid;
 		position: absolute;
-	display: inline-block;
+		display: inline-block;
 	}
 	.foundation{
 	  position: relative;
@@ -36,27 +36,27 @@
 		position:relative;
 	}
 	.card {
-	background-color: white;
-	border: 1px black solid;
-	user-select: none;
-	cursor: default;
-	left: -1px;
-	top: -1px;
+		background-color: white;
+		border: 1px black solid;
+		user-select: none;
+		cursor: default;
+		left: -1px;
+		top: -1px;
 	}
 	.topLeft {
 		position: absolute;
 		font-size: 1em;
-	left: .3em;
+		left: .3em;
 	}
 	.topRight {
-	position: absolute;
-	font-size: 1em;
-	right: .3em;
+		position: absolute;
+		font-size: 1em;
+		right: .3em;
 	}
 	.suit {
-	font-size: 2.5em;
-	position: relative;
-	top: .2em;
+		font-size: 2.5em;
+		position: relative;
+		top: .2em;
 	}
 	.backside {
 		background-color: lightblue;
@@ -212,101 +212,38 @@
 			}
 		}
 		
-		var md = false;
-		var mdTarget, mdTargetPos, mdPageX, mdPageY;
-
-		$(document).on('mousedown touchstart', function(e) {
-			mdTarget = $(e.target);
+		$(document).on('click', function(e) {
+			var mdTarget = $(e.target);
 			e.preventDefault();
 			if( e.type == 'touchstart')
 				e = e.originalEvent.touches[0];
-			if( mdTarget.hasClass('card') && !mdTarget.hasClass('backside')) {
-				mdTargetPos = mdTarget.position();
-				mdPageX = e.pageX;
-				mdPageY = e.pageY;
-				md = true;
-				mdTarget.parents('.tableau').css('z-index', 100);
-			}
+			if( !mdTarget.hasClass('card') || mdTarget.hasClass('backside'))
+				return;
+			var checkForThisCard = mdTarget;
+			var checkForThisTableau = mdTarget.parents('.tableau')[0];
+			$('.tableau, .foundation').each( function(i, tableau) {
+				if( checkForThisTableau === tableau)
+					return;
+				return checkAndMove(checkForThisCard, tableau);
+			});
 		});
 		
-		function moveCard( dropCard, targetCard) {
-			if( dropCard.parent().hasClass('card')) {
-				reveal( dropCard.parent());
+		function checkAndMove(dropCard, targetPile) {
+			var last = $(targetPile).find('.card').last();
+			if(last.length===0)
+				last=$(targetPile);
+
+			var result = dropHandler(dropCard, last);
+			if( result ) {
+				dropCard.css('top', result);
+				if( dropCard.parent().hasClass('card')) {
+					reveal( dropCard.parent());
+				}
+				last.append( dropCard);
+				return false; // stop each loop
 			}
-			targetCard.append( dropCard);
 		}
 
-		function elemFromPoint(x,y) {
-			return $(document.elementFromPoint(x-window.pageXOffset, y-window.pageYOffset));
-		}
-
-		$(document).on('mouseup touchend', function(e){
-			if( !md) return;
-			md = false;
-			var o = mdTarget.offset(); //mdTarget.getBoundingClientRect()
-			var targetCard = elemFromPoint(o.left-1, o.top-1);
-
-			var result = dropHandler(mdTarget, targetCard);
-			if( !result) {
-				targetCard = elemFromPoint(o.left+mdTarget.width()+1, o.top-1);
-				result = dropHandler(mdTarget, targetCard);
-			}
-			if( result) {
-				mdTargetPos.top = result;
-				moveCard( mdTarget, targetCard);
-				mdTarget.css({
-					top: mdTargetPos.top,
-					left: mdTargetPos.left
-				});
-				$('.tableau').css('z-index', 'auto'); // reset zIndex
-			}else{
-				mdTarget.animate({
-					top: mdTargetPos.top,
-					left: mdTargetPos.left
-				}, 100, function () {
-					$('.tableau').css('z-index', 'auto'); // reset zIndex
-				});
-			}
-		});
-
-		$(document).on('mousemove touchmove', function(e) {
-			if( md) {
-				if( e.type == 'touchmove')
-					e = e.originalEvent.touches[0];
-				mdTarget.css({
-					top: mdTargetPos.top + e.pageY- mdPageY,
-					left: mdTargetPos.left + e.pageX- mdPageX
-				});
-			}
-		});
-		
-		$(document).keydown( function(e) {
-			if(e.keyCode == 32) try {
-				$('.tableau').each( function(i, tableau) {
-					var checkForThisCard = $(tableau).find('.card').last();
-					$('.tableau').each( function(j, tab2) {
-						if( tab2 === tableau)
-							return;
-						$(tab2).find('.card').each( function(k, card) {
-							card = $(card);
-							if( !card.hasClass('backside')) {
-								var result = dropHandler(card, checkForThisCard);
-								if( result ) {
-									card.css('top', result);
-									moveCard(card, checkForThisCard);
-									throw "leave them all";
-								}
-							}
-						});
-					});
-				});
-			} catch(e) {
-				// swallow
-			}
-		});
-		
-		
-		
 		function dropHandler( dropCard, targetCard) {
 			var dropHasChildren = dropCard.children('.card').length>0;
 
